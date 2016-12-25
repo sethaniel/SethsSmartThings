@@ -25,7 +25,7 @@ definition(
 
 
 preferences {
-	section("The lock") {
+	section("The lock 333") {
 		input(name: "physicalLock", type: "capability.lock", required: true, title: "Select the lock that will be monitored")
         input(name: "notify", type: "bool", required: false, title: "Send notifications when the lock is locked or unlocked?")
         input(name: "simulatedSwitch", type: "capability.switch", required: true, title: "Select the simulated switch that will monitor and control the lock.")
