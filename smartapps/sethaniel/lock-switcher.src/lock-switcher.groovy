@@ -1,7 +1,7 @@
 /**
  *  Lock Switcher
  *
- *  Copyright 2016 Seth Munroe (456)
+ *  Copyright 2016 Seth Munroe
  *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  *  in compliance with the License. You may obtain a copy of the License at:
@@ -72,7 +72,7 @@ def physicalLockHandler(evt) {
     
     if (notify){
     	log.debug "${evt.stringValue.toUpperCase()} : ${evt.date.format('HH:mm:ss.SSS Z, EEE, MM-dd-yyyy')} : ${evt.displayName} : ${evt.descriptionText}. This happened at ${evt.date.format('HH:mm:ss.SSS zzzz')} on ${evt.date.format('EEE, MMM dd, yyyy')}."
-        sendPush("${evt.stringValue.toUpperCase()} : ${evt.date.format('HH:mm:ss.SSSZ')} : ${evt.displayName} : ${evt.descriptionText}. This happened at ${evt.date.format('HH:mm:ss.SSS zzzz')} on ${evt.date.format('EEE, MMM dd, yyyy')}.")
+        sendPush("${evt.stringValue.toUpperCase()} : ${evt.date.format('HH:mm:ss.SSSZ', location.timeZone)} : ${evt.displayName} : ${evt.descriptionText}. This happened at ${evt.date.format('HH:mm:ss.SSS zzzz', location.timeZone)} on ${evt.date.format('EEE, MMM dd, yyyy', location.timeZone)}.")
     }
 }
 
