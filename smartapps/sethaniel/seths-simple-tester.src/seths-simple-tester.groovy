@@ -28,12 +28,13 @@ preferences {
 	section("Devices") {
 		input(name: "simulatedSwitch", type: "capability.switch", required: true, title: "Select the simulated switch that will be used for testing.")
 	}
-    section("Send Notifications?") {
-        input(name: "recipients", type: "contact", title: "Send notifications to", multiple: true) {
-            input(name: "inPhone", type: "phone", title: "Warn with text message (optional: comma separated list of phone numbers)",
-                description: "Phone Number,Phone Number", required: false, multiple: true)
+    section("Notifications") {
+    	paragraph("Notifications can be sent to specific users by SMS or to everyone by SmartThings App Push notifications.", title: "SMS/Push Notifications:", required: true)
+        input(name: "recipients", type: "contact", title: "Send notifications to:", multiple: true) {
+            input(name: "inPhone", type: "phone", title: "Send SMS notifications to: (optional: comma separated list of phone numbers)",
+                description: "Phone Number", required: false, multiple: true)
         }
-        input(name: "notifyPush", type: "bool", title: "Send notifications to all logged in devices for all users of location: ${location.name}?")
+        input(name: "notifyPush", type: "bool", title: "Send notifications to all logged in devices for all users of location: ${location.name}?", defaultValue: false)
     }
 }
 
@@ -51,8 +52,7 @@ def updated() {
 }
 
 def initialize() {
-    subscribe(simulatedSwitch, "switch.on", simulatedSwitchHandler)
-    subscribe(simulatedSwitch, "switch.off", simulatedSwitchHandler)
+    subscribe(simulatedSwitch, "switch", simulatedSwitchHandler)
 }
 
 def simulatedSwitchHandler(evt) {
