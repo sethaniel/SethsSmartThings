@@ -73,7 +73,7 @@ def physicalLockHandler(evt) {
         }
     }
     
-    sendNotifications("${evt.displayName} ${evt.stringValue.toUpperCase()} at ${location.name}: ${evt.date.format('HH:mm:ss.SSSZ, EEE, MM-dd-yyyy',location.timeZone)}", recipients, inPhone, notifyPush)
+    sendNotifications("${evt.displayName} ${evt.stringValue.toUpperCase()} at ${location.name}: ${evt.date.format('HH:mm:ss.SSS Z, EEE, MM-dd-yyyy',location.timeZone)}", recipients, inPhone, notifyPush)
 }
 
 def simulatedSwitchHandler(evt) {
@@ -102,7 +102,7 @@ def simulatedSwitchHandler(evt) {
 }
 
 def logEvent(evt) {
-	log.debug "${evt.displayName} ${evt.stringValue.toUpperCase()} at ${location.name}: ${evt.date.format('HH:mm:ss.SSSZ, EEE, MM-dd-yyyy',location.timeZone)}"
+	log.debug "${evt.displayName} ${evt.stringValue.toUpperCase()} at ${location.name}: ${evt.date.format('HH:mm:ss.SSS Z, EEE, MM-dd-yyyy',location.timeZone)}"
     log.debug "event.data [$evt.data]"
     log.debug "event.description [$evt.description]"
     log.debug "event.descriptionText [$evt.descriptionText]"
