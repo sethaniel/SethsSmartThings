@@ -25,7 +25,8 @@ definition(
 
 
 preferences {
-    page(name: "pageTrigger", nextPage: "pageKeys", install: false, uninstall: true)
+    page(name: "pageTrigger", nextPage: "pageReceivers", install: false, uninstall: true)
+    page(name: "pageReceivers", nextPage: "pageKeys", install: false, uninstall: true)
     page(name: "pageKeys", install: true, uninstall: true)
 }
 
@@ -37,10 +38,8 @@ def pageTrigger() {
             input(name: "triggerReset", type: "bool", title: "Should the event be switched back automatically so that the trigger can be used again?", required: true) 
         }
 
-        section("Receiver Information") {
-            input(name: "receiverIp", type: "string", title: "What's the IP address of the Master Genie?", required: true)
-            input(name: "receiverPort", type: "string", title: "What port is the Master Genie using for control?", defaultValue: "8080", required: true)
-            input(name: "receiverMac", type: "string", title: "What's the MAC address of the target Genie (if not master)", required: false)
+        section("Number of Genie Receivers") {
+            input(name: "numReceivers", type: "number", title: "How many receivers should be controlled?", range: "1..25", required: true)
         }
 
         section("Number of keypresses") {
@@ -51,6 +50,18 @@ def pageTrigger() {
             icon(title: "Pick an Icon for the app.", reuired: false)
             label(title: "Assign a name", required: false)
             mode(title: "Set for specific mode(s)", required: false)
+        }
+    }
+}
+
+def pageReceivers() {
+    dynamicPage(name: "pageReceivers", title: "Enter Receiver Information") {
+        section("Receivers") {
+            for (def receiverCount = 1; receiverCount <= numReceivers; receiverCount++) {
+                input(name: "masterReceiverIp-${String.format('%02d', receiverCount)}", type: "string", title: "What's the IP address of Master Genie number ${String.format('%02d', receiverCount)}?", defaultValue: getSettingByPrefixAndSuffix("masterReceiverIp-", "${String.format('%02d', receiverCount)}"), required: true)
+                input(name: "masterReceiverPort-${String.format('%02d', receiverCount)}", type: "string", title: "What port is Master Genie number ${String.format('%02d', receiverCount)} using for control? (8080 is typical)", defaultValue: getSettingByPrefixAndSuffix("masterReceiverPort-", "${String.format('%02d', receiverCount)}"), required: true)
+                input(name: "clentReceiverMac-${String.format('%02d', receiverCount)}", type: "string", title: "What's the MAC address of target Genie number ${String.format('%02d', receiverCount)}? (use 0 to send to master)", defaultValue: getSettingByPrefixAndSuffix("clentReceiverMac-", "${String.format('%02d', receiverCount)}"), required: true)
+            }
         }
     }
 }
@@ -144,18 +155,19 @@ def initialize() {
     subscribe(triggerSwitch, "switch.${triggerEvent}", triggerThrown)
 }
 
-def sendKey(key) {
+def sendKey(key, masterIp, masterPort, clientMac) {
+	log.debug "sending command: Key: ${key}, Sent To: ${masterIp}:${masterPort}:${(clientMac ?: '0').replace(':', '').toUpperCase()}"
     sendHubCommand(
         new physicalgraph.device.HubAction(
             headers: [
-                HOST: "${receiverIp}:${receiverPort}"
+                HOST: "${masterIp}:${masterPort}"
             ],
             method : "GET",
             path   : "/remote/processKey",
             query  : [
                 key: "${key}",
                 hold: "keyPress",
-                clientAddr: (receiverMac ?: "0").replace(":", "").toUpperCase()
+                clientAddr: (clientMac ?: "0").replace(":", "").toUpperCase()
             ]
         )
     )
@@ -163,8 +175,10 @@ def sendKey(key) {
 
 def triggerThrown(evt) {
 
-    for (def keyCount = 1; keyCount <= numKeys; keyCount++) {
-        sendKey(getSettingByPrefixAndSuffix("keys-",String.format('%02d', keyCount)))
+    for (def receiverCount = 1; receiverCount <= numReceivers; receiverCount++) {
+        for (def keyCount = 1; keyCount <= numKeys; keyCount++) {
+            sendKey(getSettingByPrefixAndSuffix("keys-",String.format('%02d', keyCount)), getSettingByPrefixAndSuffix("masterReceiverIp-", "${String.format('%02d', receiverCount)}"), getSettingByPrefixAndSuffix("masterReceiverPort-", "${String.format('%02d', receiverCount)}"), getSettingByPrefixAndSuffix("clientReceiverMac-", "${String.format('%02d', receiverCount)}"))
+        }
     }
 
     if (triggerReset) {
