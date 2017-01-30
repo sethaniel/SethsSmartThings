@@ -108,6 +108,7 @@ def triggered(evt) {
 }
 
 def switchChanged(evt) {
+	unschedule(timeEnded)
     sendNotifications("${evt.displayName} ${evt.stringValue.toUpperCase()} at ${location.name}: ${evt.date.format('HH:mm:ss.SSS Z, EEE, MM-dd-yyyy',location.timeZone)}", recipients, inPhone, notifyPush)
 }
 
