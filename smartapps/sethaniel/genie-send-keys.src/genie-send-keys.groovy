@@ -60,7 +60,7 @@ def pageReceivers() {
             for (def receiverCount = 1; receiverCount <= numReceivers; receiverCount++) {
                 input(name: "masterReceiverIp-${String.format('%02d', receiverCount)}", type: "string", title: "What's the IP address of Master Genie number ${String.format('%02d', receiverCount)}?", defaultValue: getSettingByPrefixAndSuffix("masterReceiverIp-", "${String.format('%02d', receiverCount)}"), required: true)
                 input(name: "masterReceiverPort-${String.format('%02d', receiverCount)}", type: "string", title: "What port is Master Genie number ${String.format('%02d', receiverCount)} using for control? (8080 is typical)", defaultValue: getSettingByPrefixAndSuffix("masterReceiverPort-", "${String.format('%02d', receiverCount)}"), required: true)
-                input(name: "clentReceiverMac-${String.format('%02d', receiverCount)}", type: "string", title: "What's the MAC address of target Genie number ${String.format('%02d', receiverCount)}? (use 0 to send to master)", defaultValue: getSettingByPrefixAndSuffix("clentReceiverMac-", "${String.format('%02d', receiverCount)}"), required: true)
+                input(name: "clientReceiverMac-${String.format('%02d', receiverCount)}", type: "string", title: "What's the MAC address of target Genie number ${String.format('%02d', receiverCount)}? (use 0 to send to master)", defaultValue: getSettingByPrefixAndSuffix("clientReceiverMac-", "${String.format('%02d', receiverCount)}"), required: true)
             }
         }
     }
@@ -167,7 +167,7 @@ def sendKey(key, masterIp, masterPort, clientMac) {
             query  : [
                 key: "${key}",
                 hold: "keyPress",
-                clientAddr: (clientMac ?: "0").replace(":", "").toUpperCase()
+                clientAddr: "${(clientMac ?: '0').replace(':', '').toUpperCase()}"
             ]
         )
     )
