@@ -64,6 +64,8 @@ def updated(settings) {
 }
 
 def triggerSwitchHandler(evt) {
+	unsubscribe(targetswitch)
+    
 	if (targetswitchstart == "ON") {
 		targetswitch.on()
     } else if (targetswitchstart == "OFF") {
@@ -72,9 +74,30 @@ def triggerSwitchHandler(evt) {
     
 	def delayTime = 60 * timer
 	runIn(delayTime, changeTarget)
+    
+	if (targetswitchend == "ON") {
+    	subscribe(targetswitch, "switch.on", targetSwitchHandler)
+    } else {
+        subscribe(targetswitch, "switch.off", targetSwitchHandler)
+    }
+}
+
+def targetSwitchHandler(evt) {
+	unschedule()
+    unsubscribe(targetswitch)
+    
+    if (triggerswitchreset == "YES") {
+        if (triggerswitchstate == "ON") {
+            triggerswitch.off()
+        } else {
+            triggerswitch.on()
+        }
+    }
 }
 
 def changeTarget() {
+	unsubscribe(targetswitch)
+    
 	if (targetswitchend == "ON") {
 		targetswitch.on()
     } else {
@@ -88,5 +111,4 @@ def changeTarget() {
             triggerswitch.on()
         }
     }
-    
 }
